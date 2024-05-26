@@ -32,7 +32,7 @@ getgenv().Arceus = {
         
         ["PredictMovement"] = (true), -- // Predicts Targets Movement
         ["AutoPrediction"] = (true), -- // Automatically Gets An Good Prediction
-        ["PredictionVelocity"] = (0.198), -- // How Much It Predicts
+        ["PredictionVelocity"] = (0.17321837), -- // How Much It Predicts
         
         ["AntiGroundShots"] = (true), -- // Makes So You Dont Shoot The Ground
         ["AntiGroundValue"] = (0.5), -- // How Much Velocity It Rmoves From Target
