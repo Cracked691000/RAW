@@ -1,0 +1,810 @@
+getgenv().Stellar = {
+    Global = {
+        Friend_Check    = false,
+        Crew_Check      = false,
+        Wall_Check      = true
+    },
+    Spin = {
+        Enabled = true,
+        Keybind = Enum.KeyCode.M,
+        Speed = {Speed = 10, Degree = 165},
+
+        InternalEnabled = false, -- // do not touch [ This is stellar ui and its not added ]
+        CurrentAngle    = 69 -- // do not touch [ This is stellar ui angle and its not added ]
+    },
+    Silent = {
+        Enabled       = true,
+        Toggle        = "P",
+        HitChance     = 100, 
+        Prediction    = 0.1865,
+        Customization = {
+            FOVType          = 1, -- 1 or 2 or 3
+            Type3Leeway      = true,
+            VisualiseType3   = true,
+            ScaleFactorType3 = 0.5,
+            Type2Rectangle   = true,
+            RectangleWidth   = 45,
+            RectangleHeight  = 70,
+            ShowFOV          = true,
+            Radius           = 40,
+            Color            = Color3.fromRGB(145, 0, 0),
+            Filled           = false,
+            Transparency     = 0.25
+        },
+        GunSpecific = {
+            Enabled = true,
+            Detection = { Close = 35, Mid = 65, Far = math.huge },
+            Pistols = {
+                FOV = { Close = 30, Mid = 40, Far = 40 },
+                Prediction = { Close = 0.163, Mid = 0.17553, Far = 0.18 },
+                HitChance = { Close = 100, Mid = 100, Far = 100 }
+            },
+            Shotguns = {
+                FOV = { Close = 30, Mid = 40, Far = 40 },
+                Prediction = { Close = 0.163, Mid = 0.17553, Far = 0.18 },
+                HitChance = { Close = 100, Mid = 100, Far = 100 }
+            },
+            Automatics = {
+                FOV = { Close = 30, Mid = 40, Far = 40 },
+                Prediction = { Close = 0.163, Mid = 0.17553, Far = 0.18 },
+                HitChance = { Close = 100, Mid = 100, Far = 100 }
+            },
+            Other = {
+                FOV = { Close = 30, Mid = 40, Far = 40 },
+                Prediction = { Close = 0.163, Mid = 0.17553, Far = 0.18 },
+                HitChance = { Close = 100, Mid = 100, Far = 100 }
+            }
+        }
+    },    
+    Camlock = {
+        Enabled                      = true,
+        Smoothing                    = 0.25,
+        EasingStyle                  = Enum.EasingStyle.Exponential,
+        EasingDirection              = Enum.EasingDirection.InOut,
+        Sensitivity                  = 2,
+        Prediction                   = 0.1105, -- // Prediction
+        Toggle                       = "T", -- // Keybind
+        Part                         = "Head", -- // AimPart
+        AirPart                      = "Head", -- // AimPart when Target is in air
+        AirSmoothing                 = 0.3, -- // Smoothing when Target is in air
+        AirPrediction                = 0.1106, -- // Predicition when Target is in air
+        Disable_On_ThirdPerson       = true,
+        Disable_On_Reload            = true,
+        Disable_When_Not_Holding_Gun = false,
+        GunSpecific = {
+            Enabled = false,
+            Detection = { Close = 35, Mid = 65, Far = math.huge },
+
+            Pistols = {
+                Smoothing = { Close = 0.26, Mid = 0.3, Far = 0.315 },
+                Prediction = { Close = 0.15, Mid = 0.12, Far = 0.13 },
+                Part = { Close = "Head", Mid = "UpperTorso", Far = "UpperTorso" },
+                AirSmoothing = { Close = 0.34, Mid = 0.36, Far = 0.33 },
+                AirPrediction = { Close = 0.11, Mid = 0.1, Far = 0.13 },
+                AirPart = { Close = "Head", Mid = "Head", Far = "UpperTorso" },
+                Sensitivity = { Close = 0.25, Mid = 0.25, Far = 0.25 }
+            },
+            Shotguns = {
+                Smoothing = { Close = 0.26, Mid = 0.3, Far = 0.315 },
+                Prediction = { Close = 0.15, Mid = 0.12, Far = 0.13 },
+                Part = { Close = "Head", Mid = "UpperTorso", Far = "UpperTorso" },
+                AirSmoothing = { Close = 0.34, Mid = 0.36, Far = 0.33 },
+                AirPrediction = { Close = 0.11, Mid = 0.1, Far = 0.13 },
+                AirPart = { Close = "Head", Mid = "Head", Far = "UpperTorso" },
+                Sensitivity = { Close = 0.25, Mid = 0.25, Far = 0.25 }
+            },
+            Automatics = {
+                Smoothing = { Close = 0.26, Mid = 0.3, Far = 0.315 },
+                Prediction = { Close = 0.15, Mid = 0.12, Far = 0.13 },
+                Part = { Close = "Head", Mid = "UpperTorso", Far = "UpperTorso" },
+                AirSmoothing = { Close = 0.34, Mid = 0.36, Far = 0.33 },
+                AirPrediction = { Close = 0.11, Mid = 0.1, Far = 0.13 },
+                AirPart = { Close = "Head", Mid = "Head", Far = "UpperTorso" },
+                Sensitivity = { Close = 0.25, Mid = 0.25, Far = 0.25 }
+            }
+        }
+    },
+    TriggerBot = { -- Too lazy to make this work
+        Enabled               = false,
+        Prediction            = 0.124, -- // If GunSpecificPrediction is false
+        Cooldown              = 0.001,
+        Toggle                = "C",
+        GunSpecificPrediction = {
+            Enabled = true,
+
+            Detection = { Close = 35, Mid = 65, Far = math.huge },
+            Pistols = { Close = 0.13, Mid = 0.1256, Far = 0.12125 },
+            Shotguns = { Close = 0.132, Mid = 0.127, Far = 0.124 },
+            Other = { Close = 0.132, Mid = 0.1256, Far = 0.1254 }
+        }
+    },
+    Misc = {
+        MemorySpoofer = {
+            Percent = 100 -- // %
+        },
+        SpeedThreshold = 65,
+        Macro = {
+            Enabled     = false,
+            MacroKey    = "x",
+            MacroSpeed  = 2,
+            MacroType   = "mouse", -- // Normal or Mouse (It doesn't matter if it's in upper or lower case.)
+            MacroToggle = "hold" -- // Hold or Press (It doesn't matter if it's in upper or lower case.)
+        }
+    },
+    Prediction = {
+        Enabled            = true,
+        RangeCoefficient   = 0.01,
+        AdditionalInterval = 10 / 205,
+        Precision          = 5
+    }
+}
+
+getgenv().StellaricHitPart = "HumanoidRootPart"
+
+
+getgenv().StellarSettings = false
+
+if not LPH_OBFUSCATED then
+    LPH_JIT_MAX = function(...)
+        return (...)
+    end
+    LPH_NO_VIRTUALIZE = function(...)
+        return (...)
+    end
+end
+
+local StarterGui = game:GetService("StarterGui")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Client = LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local GetPlayers = Players.GetPlayers
+local Mouse = LocalPlayer:GetMouse()
+local RunService = game:GetService("RunService")
+local Camera = game.Workspace.CurrentCamera
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local TPservice= game:GetService("TeleportService")
+local GetPlayers = Players.GetPlayers
+local Mouse = LocalPlayer:GetMouse()
+local Workspace = game:GetService("Workspace")
+local GuiService = game:GetService("GuiService")
+local CurrentCamera = Workspace.CurrentCamera
+local TeleportService = game:GetService("TeleportService")
+local GetGuiInset = GuiService.GetGuiInset
+local Circle1 = Drawing.new("Circle")
+local Circle2 = Drawing.new("Circle")
+local Plr,Plr2,IsTargetting
+local Uis = game:GetService("UserInputService")
+
+local Script = {Functions = {}, Friends = {}, Drawing = {}, EspPlayers = {}}
+
+Script.Functions.Alive = function(Plr)
+	if Plr and Plr.Character and Plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and Plr.Character:FindFirstChild("Humanoid") ~= nil and Plr.Character:FindFirstChild("Head") ~= nil then
+		return true
+	end
+	return false
+end
+
+-- // Splits The Gun Name And Splits []
+Script.Functions.GetGunName = function(Name)
+	local split = string.split(string.split(Name, "[")[2], "]")[1]
+	return split
+end
+
+-- // Gets Current Gun
+Script.Functions.GetCurrentWeaponName = function()
+	if Client.Character and Client.Character:FindFirstChildWhichIsA("Tool") then
+		local Tool =  Client.Character:FindFirstChildWhichIsA("Tool")
+		if string.find(Tool.Name, "%[") and string.find(Tool.Name, "%]") and not string.find(Tool.Name, "Wallet") and not string.find(Tool.Name, "Phone") then
+			return Script.Functions.GetGunName(Tool.Name)
+		end
+	end
+	return nil
+end
+
+function WallCheck (destination, ignore)
+    if (getgenv().Stellar.Global.Wall_Check) then
+        local Origin = Camera.CFrame.p
+        local CheckRay = Ray.new(Origin, destination - Origin)
+        local Hit = game:GetService("Workspace"):FindPartOnRayWithIgnoreList(CheckRay, ignore)
+        return Hit == nil
+    else
+        return true
+    end
+end
+
+local WTS = (function(Object)
+	local ObjectVector = CurrentCamera:WorldToScreenPoint(Object.Position)
+	return Vector2.new(ObjectVector.X, ObjectVector.Y)
+end)
+
+local Filter = (function(obj)
+	if (obj:IsA('BasePart')) then
+		return true
+	end
+end)
+
+local MousePosVector2 = (function()
+	return Vector2.new(Mouse.X, Mouse.Y) 
+end)
+
+
+
+
+function SilentFOV()
+  if not (Circle2) then
+      return
+  end
+  Circle2.Visible = getgenv().Stellar.Silent.Customization.ShowFOV
+  Circle2.Radius =  getgenv().Stellar.Silent.Customization.Radius * 3
+  Circle2.Position = Vector2.new(Mouse.X, Mouse.Y + GetGuiInset(GuiService).Y)
+  Circle2.Filled = getgenv().Stellar.Silent.Customization.Filled
+  Circle2.Transparency = getgenv().Stellar.Silent.Customization.Transparency
+  Circle2.Thickness = 1
+  Circle2.NumSides = 100
+  Circle2.Color = getgenv().Stellar.Silent.Customization.Color
+  return Circle2
+end
+RunService.Heartbeat:Connect(function() AimbotFOV() SilentFOV()end)
+
+
+function AimbotFOV()
+    if not (Circle1) then
+        return
+    end
+    Circle1.Visible = false
+    Circle1.Radius =  100
+    Circle1.Position = Vector2.new(Mouse.X, Mouse.Y + GetGuiInset(GuiService).Y)
+    Circle1.Filled = true
+    Circle1.Transparency = 0.25
+    Circle1.Thickness = 1
+    Circle1.NumSides = 100
+    Circle1.Color = Color3.fromRGB(145, 0, 0)
+    return Circle1
+end
+
+local ClosestPlrFromMouse = function()
+    local Target = nil
+    Closest = 1 / 0
+    for _ ,v in ipairs(Players:GetPlayers()) do
+        if (v.Character and v ~= Client and v.Character:FindFirstChild("HumanoidRootPart")) and WallCheck(v.Character.HumanoidRootPart.Position, {Client, v.Character})  then
+        local Position, OnScreen = Camera:WorldToScreenPoint(v.Character.HumanoidRootPart.Position)
+        local Distance = (Vector2.new(Position.X, Position.Y) - Vector2.new(Mouse.X, Mouse.Y)).Magnitude
+        if (Circle2.Radius > Distance and Distance < Closest and OnScreen and Position) then
+        Closest = Distance
+        Target = v
+        end
+        end
+    end
+    return Target
+end
+
+local GetClosestBodyPart = (function()
+	local ShortestDistance = math.huge
+	local BodyPart = nil
+	for _, v in next, game.Players:GetPlayers() do
+		if (v ~= Client and v.Character and v.Character:FindFirstChild("Humanoid")) then
+			for k, x in next, v.Character:GetChildren() do
+				if (Filter(x)) then
+					local Distance = (WTS(x) - MousePosVector2()).magnitude
+					if (Distance < ShortestDistance) then
+						ShortestDistance = Distance
+						BodyPart = x
+					end
+				end
+			end
+		end
+	end
+	return BodyPart
+end)
+
+
+
+if getgenv().Stellar.Camlock.Enabled == true then
+    if Plr.Character.Humanoid.Jump == true and Plr.Character.Humanoid.FloorMaterial == Enum.Material.Air then
+        getgenv().Stellar.Camlock.Part = getgenv().Stellar.Camlock.AirPart
+    else
+        Plr.Character:WaitForChild("Humanoid").StateChanged:Connect(function(old,new)
+        if new == Enum.HumanoidStateType.Freefall then
+        getgenv().Stellar.Camlock.Part = getgenv().Stellar.Camlock.AirPart
+        else
+        getgenv().Stellar.Camlock.Part = getgenv().Stellar.Camlock.Part
+        end
+        end)
+    end
+end
+
+if getgenv().Stellar.Camlock.Enabled == true then
+    if Plr.Character.Humanoid.Jump == true and Plr.Character.Humanoid.FloorMaterial == Enum.Material.Air then
+        getgenv().Stellar.Camlock.Smoothing = getgenv().Stellar.Camlock.AirSmoothing
+    else
+        Plr.Character:WaitForChild("Humanoid").StateChanged:Connect(function(old,new)
+        if new == Enum.HumanoidStateType.Freefall then
+        getgenv().Stellar.Camlock.Smoothing = getgenv().Stellar.Camlock.AirSmoothing
+        else
+        getgenv().Stellar.Camlock.Smoothing = getgenv().Stellar.Camlock.Smoothing
+        end
+        end)
+    end
+end
+
+if getgenv().Stellar.Camlock.Enabled == true then
+    if Plr.Character.Humanoid.Jump == true and Plr.Character.Humanoid.FloorMaterial == Enum.Material.Air then
+        getgenv().Stellar.Camlock.Prediction = getgenv().Stellar.Camlock.AirPrediction
+    else
+        Plr.Character:WaitForChild("Humanoid").StateChanged:Connect(function(old,new)
+        if new == Enum.HumanoidStateType.Freefall then
+        getgenv().Stellar.Camlock.Prediction = getgenv().Stellar.Camlock.AirPrediction
+        else
+        getgenv().Stellar.Camlock.Prediction = getgenv().Stellar.Camlock.Prediction
+        end
+        end)
+    end
+end
+
+Mouse.KeyDown:Connect(function(Key)
+    local Keybind = getgenv().Stellar.Camlock.Toggle:lower()
+    if (Key == Keybind) then
+        if getgenv().Stellar.Camlock.Enabled == true then
+        IsTargetting = not IsTargetting
+        if IsTargetting then
+        Plr = NearestPerson()
+        else
+        if Plr ~= nil then
+        Plr = nil
+        end
+        end
+       end
+    end
+end)
+
+
+if getgenv().StellarSettings == true then
+    function NearestPerson()
+        local closestPlayer
+        local shortestDistance = getgenv().Stellar.FOV.Camlock.Size
+        for i, v in ipairs(game.Players:GetPlayers()) do
+        pcall(function()
+        if v ~= game.Players.LocalPlayer and v.Character and
+        v.Character:FindFirstChild("Humanoid") and WallCheck(v.Character.HumanoidRootPart.Position, {Client, v.Character})  then
+        local pos = CurrentCamera:WorldToViewportPoint(v.Character.PrimaryPart.Position)
+        local magnitude =
+        (Vector2.new(pos.X, pos.Y) - Vector2.new(Mouse.X, Mouse.Y)).magnitude
+        if (Vector2.new(pos.X, pos.Y) - Vector2.new(Mouse.X, Mouse.Y)).magnitude < shortestDistance then
+        closestPlayer = v
+        shortestDistance = magnitude
+        end
+        end
+        end)
+        end
+    return closestPlayer
+    end
+
+    elseif getgenv().StellarSettings == false then
+        function NearestPerson()
+        local closestPlayer
+        local shortestDistance = 1000000000
+        for i, v in ipairs(game.Players:GetPlayers()) do
+        pcall(function()
+        if v ~= game.Players.LocalPlayer and v.Character and
+        v.Character:FindFirstChild("Humanoid") and WallCheck(v.Character.HumanoidRootPart.Position, {Client, v.Character}) then
+        local pos = CurrentCamera:WorldToViewportPoint(v.Character.PrimaryPart.Position)
+        local magnitude =
+        (Vector2.new(pos.X, pos.Y) - Vector2.new(Mouse.X, Mouse.Y)).magnitude
+        if (Vector2.new(pos.X, pos.Y) - Vector2.new(Mouse.X, Mouse.Y)).magnitude < shortestDistance then
+        closestPlayer = v
+        shortestDistance = magnitude
+        end
+        end
+        end)
+        end
+        return closestPlayer
+    end
+end
+
+
+
+RunService.RenderStepped:Connect(function()
+    if getgenv().Stellar.Camlock.Enabled == true and Plr and Plr.Character ~= nil then
+        if getgenv().Stellar.Shake.Shake then
+        local Main = CFrame.new(Camera.CFrame.p,Plr.Character[getgenv().Stellar.Camlock.Part].Position + Plr.Character[getgenv().Stellar.Camlock.Part].Velocity*getgenv().Stellar.Camlock.Prediction +
+        Vector3.new(
+        math.random(-getgenv().Stellar.Shake.Shake_X,getgenv().Stellar.Shake.Shake_X),
+        math.random(-getgenv().Stellar.Shake.Shake_Y,getgenv().Stellar.Shake.Shake_Z),
+        math.random(-getgenv().Stellar.Shake.Shake_Z,getgenv().Stellar.Shake.Shake_Z)
+        )*1)
+        Camera.CFrame = Camera.CFrame:Lerp(Main,getgenv().Stellar.Camlock.Smoothing,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut,Enum.EasingStyle.Bounce,Enum.EasingDirection.Out,Enum.EasingStyle.Exponential,Enum.EasingDirection.Out)
+        else
+        local Main = CFrame.new(Camera.CFrame.p,Plr.Character[getgenv().Stellar.Camlock.Part].Position + Plr.Character[getgenv().Stellar.Camlock.Part].Velocity*getgenv().Stellar.Camlock.Prediction)
+        Camera.CFrame = Camera.CFrame:Lerp(Main,getgenv().Stellar.Camlock.Smoothing,getgenv().Stellar.Camlock.EasingStyle,getgenv().Stellar.Camlock.EasingDirection)
+        end
+    end
+end)
+
+RunService.Heartbeat:Connect(function()
+        if getgenv().Stellar.Camlock.Enabled == true and Plr and Plr.Character ~= nil then
+        if getgenv().Stellar.Camlock.Enabled then
+        if Plr.Character.BodyEffects["K.O"].Value then Plr = nil 
+        end
+        end
+        end
+end)
+
+
+local grmt = getrawmetatable(game)
+local backupindex = grmt.__index
+setreadonly(grmt, false)
+
+grmt.__index = newcclosure(function(self, v)
+if (getgenv().Stellar.Silent.Enabled and Mouse and tostring(v) == "Hit") then
+    Plr2 = ClosestPlrFromMouse()
+    if Plr2 then
+        local endpoint = game.Players[tostring(Plr2)].Character[getgenv().StellaricHitPart].CFrame + (
+        game.Players[tostring(Plr2)].Character[getgenv().StellaricHitPart].Velocity *getgenv().Stellar.Silent.Prediction
+        )
+        return (tostring(v) == "Hit" and endpoint)
+    end
+end
+return backupindex(self, v)
+end)
+
+RunService.RenderStepped:Connect(function()
+    if getgenv().Stellar.Camlock.Enabled and getgenv().Stellar.Camlock.Enabled  == true then
+        local Main = CFrame.new(workspace.CurrentCamera.CFrame.p, Plr.Character[getgenv().Stellar.Camlock.Part].Position + Plr.Character[getgenv().Stellar.Camlock.Part].Velocity*getgenv().Stellar.Camlock.Prediction)
+         workspace.CurrentCamera.CFrame = workspace.CurrentCamera.CFrame:Lerp(Main,getgenv().Stellar.Camlock.Smoothing,Enum.EasingStyle[getgenv().Stellar.Camlock.EasingStyle],getgenv().Stellar.Camlock.EasingDirection)
+    elseif getgenv().Stellar.Camlock.Enabled == false and  getgenv().Stellar.Camlock.Enabled == true then
+        workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, Plr.Character[getgenv().Stellar.Camlock.Part].Position + Plr.Character[getgenv().Stellar.Camlock.Part].Velocity*getgenv().Stellar.Camlock.Prediction)
+    end
+end)
+
+local function GetClosestPointOfPart(Part)
+    local mouseray = Mouse.UnitRay
+    mouseray = mouseray.Origin + (mouseray.Direction * (Part.Position - mouseray.Origin).Magnitude)
+    local point =
+        (mouseray.Y >= (Part.Position - Part.Size / 2).Y and mouseray.Y <= (Part.Position + Part.Size / 2).Y) and
+            (Part.Position + v3.new(0, -Part.Position.Y + mouseray.Y, 0)) or Part.Position
+    local check = RaycastParams.new()
+    check.FilterType = Enum.RaycastFilterType.Whitelist
+    check.FilterDescendantsInstances = {Part}
+    local ray = game:GetService("Workspace"):Raycast(mouseray, (point - mouseray), check)
+    if ray then
+        return ray.Position
+    else
+        return Mouse.Hit.Position
+    end
+end
+
+local targ
+
+task.spawn(function ()
+    while task.wait() do
+    	if getgenv().Stellar.Silent.Enabled then
+            targ = ClosestPlrFromMouse()
+    	end
+        if targ then
+            if getgenv().Stellar.Silent.Enabled  and (targ.Character) and getgenv().Stellar.Silent.Enabled then
+                getgenv().StellaricHitPart = tostring(GetClosestPointOfPart(targ.Character))
+            end
+        end
+    end
+end)
+
+Mouse.KeyDown:Connect(
+  function(Key)
+    if (Key ==  getgenv().Stellar.Silent.Toggle:lower()) then
+        if getgenv().Stellar.Silent.Enabled == true then
+        getgenv().Stellar.Silent.Enabled = false
+        else
+        getgenv().Stellar.Silent.Enabled = true
+        end
+    end
+  end
+)
+
+-- grabbed checks
+
+    if getgenv().Stellar.Silent.Enabled == true and player and player.Character then
+        if player.Character:FindFirstChild("GRABBING_CONSTRAINT") then
+        return true
+        end
+end
+
+if getgenv().Stellar.Global.Crew_Check == true then
+while true do
+local newPlayer = game.Players.PlayerAdded:wait()
+if player:IsInGroup(newPlayer.Group) then
+table.insert(Ignored.Players, newPlayer)
+end
+end
+end
+
+
+function TargetChecks(Target)
+    if getgenv().Stellar.Silent.Enabled == true and Target.Character then
+        return Target.Character.BodyEffects["K.O"].Value and true or false
+    end
+    return false
+end
+
+Uis.InputBegan:connect(function(input, Gp)
+    if not Gp then
+        if input.KeyCode == string.upper(getgenv().Stellar.Spin.Keybind) and getgenv().Stellar.Spin.Enabled then
+            if getgenv().Stellar.Camlock.Enabled then
+                getgenv().Stellar.Camlock.Enabled = false
+            end
+            for i = 1, math.floor(getgenv().Stellar.Spin.Speed.Degree / getgenv().Stellar.Spin.Speed.Speed) do
+                Camera.CoordinateFrame = Camera.CoordinateFrame * CFrame.Angles(0, math.rad(getgenv().Stellar.Spin.Speed), 0)
+                RS.Heartbeat:Wait()
+            end
+            if getgenv().Stellar.Camlock.Enabled then
+                getgenv().Stellar.Camlock.Enabled = true
+            end
+        end
+    end
+end)
+
+
+if getgenv().Stellar.Global.Friend_Check then
+	if table.find(Script.Friends, Target.UserId) then
+		return nil
+	end
+end
+
+getgenv().StellarResolver = true -- Enables resolver
+
+local CheckIfVelocityUse = function (player) 
+    player.Character.HumanoidRootPart.Velocity = Vector3.new(0.36, 0.21, 0.34) * 2
+end
+
+local VelocityCheck = function (player, pos, neg)
+    if player and player.Character:FindFirstChild("Humanoid") then
+        local velocity = player.Character.HumanoidRootPart.Velocity
+        if (velocity.Magnitude > neg or velocity.Magnitude < pos and
+        (not player.Character.Humanoid.Jump == true)) then
+            CheckIfVelocityUse(player)
+        end
+    end
+    return false
+end
+
+-- Resolver it hits shots and auto resolves
+task.spawn(function() 
+    while task.wait() do
+        if getgenv().StellarResolver == true then 
+            VelocityCheck(Plr or Plr2, 80, -40) 
+        end
+    end
+end)
+
+-- Basically range fov table
+local RangeFov = {
+    ["Silencer"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.FOV.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.FOV.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.FOV.Far }},
+    ["Revolver"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.FOV.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.FOV.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.FOV.Far }},
+    ["Double-Barrel SG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.FOV.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.FOV.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.FOV.Far }},
+    ["Shotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.FOV.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.FOV.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.FOV.Far }},
+    ["TacticalShotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.FOV.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.FOV.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.FOV.Far }},
+    ["SMG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.FOV.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.FOV.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.FOV.Far }},
+    ["AK47"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.FOV.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.FOV.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.FOV.Far }},
+    ["AR"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.FOV.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.FOV.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.FOV.Far }},
+    ["P90"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.FOV.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.FOV.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.FOV.Far }},
+    ["Rifle"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Other.FOV.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Other.FOV.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Other.FOV.Far }},
+}
+
+local RangePrediction = {
+    ["Silencer"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Prediction.Far }},
+    ["Revolver"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Prediction.Far }},
+    ["Double-Barrel SG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Far }},
+    ["Shotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Far }},
+    ["TacticalShotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Far }},
+    ["SMG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Far }},
+    ["AK47"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Far }},
+    ["AR"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Far }},
+    ["P90"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Far }},
+    ["Rifle"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Other.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Other.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Other.Prediction.Far }},
+}
+
+
+
+local CurrentGun = Script.Functions.GetCurrentWeaponName()
+
+
+-- Range fov is not really that good
+
+if getgenv().Stellar.Silent.GunSpecifc.Enabled then
+    local WeaponSettingsV2 = RangeFov[CurrentGun]
+    local WeaponSettingsV3 = RangePrediction[CurrentGun]
+    if WeaponSettingsV2 and WeaponSettingsV3 ~= nil then
+        if Script.Functions.Alive(Plr2) and Script.Functions.Alive(Client) then
+            local Magnitude = (Plr2.Character.HumanoidRootPart.Position - Client.Character.HumanoidRootPart.Position).Magnitude
+            if Magnitude < getgenv().Stellar.Silent.GunSpecifc.Detection.Close then
+                getgenv().Stellar.Silent.Customization.Radius = WeaponSettingsV2.Close
+                getgenv().Stellar.Silent.Prediction           = WeaponSettingsV3.Close
+            elseif Magnitude < getgenv().Stellar.Silent.GunSpecifc.Detection.Mid then
+                getgenv().Stellar.Silent.Customization.Radius = WeaponSettingsV2.Mid
+                getgenv().Stellar.Silent.Prediction           = WeaponSettingsV3.Mid
+            elseif Magnitude < getgenv().Stellar.Silent.GunSpecifc.Detection.Far then
+                getgenv().Stellar.Silent.Customization.Radius = WeaponSettingsV2.Far
+                getgenv().Stellar.Silent.Prediction           = WeaponSettingsV3.Far
+            end
+        end
+    end
+end
+
+local RangePredictionCamlock = {
+    ["Silencer"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Prediction.Far }},
+    ["Revolver"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Prediction.Far }},
+    ["Double-Barrel SG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Far }},
+    ["Shotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Far }},
+    ["TacticalShotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Prediction.Far }},
+    ["SMG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Far }},
+    ["AK47"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Far }},
+    ["AR"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Far }},
+    ["P90"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Prediction.Far }},
+    ["Rifle"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Other.Prediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Other.Prediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Other.Prediction.Far }},
+}
+
+local RangeSmoothingCamlock = {
+    ["Silencer"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Smoothing.Smoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Smoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Smoothing.Far }},
+    ["Revolver"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Smoothing.Smoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Smoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Smoothing.Far }},
+    ["Double-Barrel SG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Smoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Smoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Smoothing.Far }},
+    ["Shotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Smoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Smoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Smoothing.Far }},
+    ["TacticalShotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Smoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Smoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Smoothing.Far }},
+    ["SMG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Smoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Smoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Smoothing.Far }},
+    ["AK47"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Smoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Smoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Smoothing.Far }},
+    ["AR"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Smoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Smoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Smoothing.Far }},
+    ["P90"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Smoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Smoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Smoothing.Far }},
+    ["Rifle"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Other.Smoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Other.Smoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Other.Smoothing.Far }},
+}
+
+local RangePartCamlock = {
+    ["Silencer"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Part.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Part.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Part.Far }},
+    ["Revolver"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Part.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Part.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.Part.Far }},
+    ["Double-Barrel SG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Part.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Part.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Part.Far }},
+    ["Shotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Part.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Part.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Part.Far }},
+    ["TacticalShotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Part.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Part.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.Part.Far }},
+    ["SMG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Part.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Part.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Part.Far }},
+    ["AK47"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Part.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Part.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Part.Far }},
+    ["AR"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Part.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Part.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Part.Far }},
+    ["P90"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Part.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Part.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.Part.Far }},
+    ["Rifle"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Other.Part.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Other.Part.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Other.Part.Far }},
+}
+
+local RangeAirSmoothingCamlock = {
+    ["Silencer"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirSmoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirSmoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirSmoothing.Far }},
+    ["Revolver"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirSmoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirSmoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirSmoothing.Far }},
+    ["Double-Barrel SG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirSmoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirSmoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirSmoothing.Far }},
+    ["Shotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirSmoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirSmoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirSmoothing.Far }},
+    ["TacticalShotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirSmoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirSmoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirSmoothing.Far }},
+    ["SMG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirSmoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirSmoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirSmoothing.Far }},
+    ["AK47"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirSmoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirSmoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirSmoothing.Far }},
+    ["AR"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirSmoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirSmoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirSmoothing.Far }},
+    ["P90"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirSmoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirSmoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirSmoothing.Far }},
+    ["Rifle"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Other.AirSmoothing.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Other.AirSmoothing.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Other.AirSmoothing.Far }},
+}
+
+local RangeAirPredictionCamlock = {
+    ["Silencer"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirPrediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirPrediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirPrediction.Far }},
+    ["Revolver"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirPrediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirPrediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirPrediction.Far }},
+    ["Double-Barrel SG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPrediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPrediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPrediction.Far }},
+    ["Shotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPrediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPrediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPrediction.Far }},
+    ["TacticalShotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPrediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPrediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPrediction.Far }},
+    ["SMG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPrediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPrediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPrediction.Far }},
+    ["AK47"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPrediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPrediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPrediction.Far }},
+    ["AR"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPrediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPrediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPrediction.Far }},
+    ["P90"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPrediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPrediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPrediction.Far }},
+    ["Rifle"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Other.AirPrediction.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Other.AirPrediction.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Other.AirPrediction.Far }},
+}
+
+local RangeAirPartCamlock = {
+    ["Silencer"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirPart.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirPart.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirPart.Far }},
+    ["Revolver"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirPart.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirPart.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Pistols.AirPart.Far }},
+    ["Double-Barrel SG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPart.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPart.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPart.Far }},
+    ["Shotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPart.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPart.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPart.Far }},
+    ["TacticalShotgun"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPart.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPart.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Shotguns.AirPart.Far }},
+    ["SMG"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPart.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPart.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPart.Far }},
+    ["AK47"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPart.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPart.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPart.Far }},
+    ["AR"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPart.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPart.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPart.Far }},
+    ["P90"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPart.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPart.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Automatics.AirPart.Far }},
+    ["Rifle"] = {["Close"] = getgenv().Stellar.Silent.GunSpecifc.Other.AirPart.Close and {["Mid"] = getgenv().Stellar.Silent.GunSpecifc.Other.AirPart.Mid } and {["Far"] = getgenv().Stellar.Silent.GunSpecifc.Other.AirPart.Far }},
+}
+
+if getgenv().Stellar.Camlock.GunSpecifc.Enabled then
+    local SmoothingWeaponSettings = RangeSmoothingCamlock[CurrentGun]
+    local PredictionWeaponSettings = RangePredictionCamlock[CurrentGun]
+    local PartWeaponSettings = RangePartCamlock[CurrentGun]
+    local AirSmoothingWeaponSettings = RangeAirSmoothingCamlock[CurrentGun]
+    local AirPredictionWeaponSettings = RangeAirPredictionCamlock[CurrentGun]
+    local AirPartWeaponSettings = RangeAirPartCamlock[CurrentGun]
+    if SmoothingWeaponSettings and PredictionWeaponSettings ~= nil then
+        if Script.Functions.Alive(Plr2) and Script.Functions.Alive(Client) then
+            local Magnitude = (Plr2.Character.HumanoidRootPart.Position - Client.Character.HumanoidRootPart.Position).Magnitude
+            if Magnitude < getgenv().Stellar.Camlock.GunSpecifc.Detection.Close then
+                getgenv().Stellar.Camlock.Smoothing  = SmoothingWeaponSettings.Close
+                getgenv().Stellar.Camlock.Prediction = PredictionWeaponSettings.Close
+                getgenv().Stellar.Camlock.Part       = PartWeaponSettings.Close
+                getgenv().Stellar.Camlock.AirSmoothing = AirSmoothingWeaponSettings.Close
+                getgenv().Stellar.Camlock.AirPrediction = AirPredictionWeaponSettings.Close
+                getgenv().Stellar.Camlock.AirPart = AirPartWeaponSettings.Close
+            elseif Magnitude < getgenv().Stellar.Camlock.GunSpecifc.Detection.Mid then
+                getgenv().Stellar.Camlock.Smoothing  = SmoothingWeaponSettings.Mid
+                getgenv().Stellar.Camlock.Prediction = PredictionWeaponSettings.Mid
+                getgenv().Stellar.Camlock.Part       = PartWeaponSettings.Mid
+                getgenv().Stellar.Camlock.AirSmoothing = AirSmoothingWeaponSettings.Mid
+                getgenv().Stellar.Camlock.AirPrediction = AirPredictionWeaponSettings.Mid
+                getgenv().Stellar.Camlock.AirPart = AirPartWeaponSettings.Mid
+            elseif Magnitude < getgenv().Stellar.Camlock.GunSpecifc.Detection.Far then
+                getgenv().Stellar.Camlock.Smoothing  = SmoothingWeaponSettings.Far
+                getgenv().Stellar.Camlock.Prediction = PredictionWeaponSettings.Far
+                getgenv().Stellar.Camlock.Part       = PartWeaponSettings.Far
+                getgenv().Stellar.Camlock.AirSmoothing = AirSmoothingWeaponSettings.Far
+                getgenv().Stellar.Camlock.AirPrediction = AirPredictionWeaponSettings.Far
+                getgenv().Stellar.Camlock.AirPart = AirPartWeaponSettings.Far
+            end
+        end
+    end
+end
+
+
+local PredictionManager = {
+    VelocityMultiplier = Vector3.new(1, 0, 1)
+}
+
+local Camera = workspace.CurrentCamera
+
+local players = game:GetService('Players')
+local target = players:GetPlayers()[math.random(1, #players:GetPlayers())]
+local prediction
+
+while task.wait() do
+    local ping = math.floor(game.Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) / 1000
+    local distance = math.floor((target.Character.HumanoidRootPart.CFrame.p - Camera.CFrame.p).Magnitude)
+    local rangecoefficient = distance * getgenv().Stellar.Prediction.RangeCeofficient
+    
+    target.Character.HumanoidRootPart.Velocity.X = target.Character.HumanoidRootPart.Velocity.X * PredictionManager.VelocityMultiplier.X
+    target.Character.HumanoidRootPart.Velocity.Y = target.Character.HumanoidRootPart.Velocity.Y * PredictionManager.VelocityMultiplier.Y
+    target.Character.HumanoidRootPart.Velocity.Z = target.Character.HumanoidRootPart.Velocity.Z * PredictionManager.VelocityMultiplier.Z
+    
+    prediction = math.floor(ping + rangecoefficient + getgenv().Stellar.Prediction.AdditionalInterval * 10^getgenv().Stellar.Prediction.Precision) / 10^getgenv().Stellar.Prediction.Precision
+end
+
+local SpeedGlitch = false
+Mouse.KeyDown:Connect(function(Key)
+    if Key == (string.lower(getgenv().Stellar.Macro.MacroKey)) and getgenv().Stellar.Macro. Type == "Normal" or getgenv().Stellar.Macro.MacroType == "normal" then
+        if getgenv().Stellar.Macro.Enabled then
+            SpeedGlitch = not SpeedGlitch
+            if SpeedGlitch == true then
+                repeat task.wait(Stellar.Macro.MacroSpeed / 100)
+                game:GetService("VirtualInputManager"):SendKeyEvent(true, "I", false, game)
+                task.wait(getgenv().Stellar.Macro.MacroSpeed / 100)
+                game:GetService("VirtualInputManager"):SendKeyEvent(true, "O", false, game)
+                task.wait(getgenv().Stellar.Macro.MacroSpeed / 100)
+                game:GetService("VirtualInputManager"):SendKeyEvent(true, "I", false, game)
+                task.wait(getgenv().Stellar.Macro.MacroSpeed / 100)
+                game:GetService("VirtualInputManager"):SendKeyEvent(true, "O", false, game)
+                task.wait(getgenv().Stellar.Macro.MacroSpeed / 100)
+                until SpeedGlitch == false
+            end
+        end
+    end
+end)
+
+Mouse.KeyDown:Connect(function(Key)
+    if Key == (string.lower(getgenv().Stellar.Macro.MacroKey)) and getgenv().Stellar.Misc.Macro.MacroType == "Mouse" or getgenv().Stellar.Misc.Macro.MacroType == "mouse" then
+        if getgenv().Stellar.Misc.Macro.Enabled then
+            SpeedGlitch = not SpeedGlitch
+            if SpeedGlitch == true then
+                repeat task.wait(getgenv().Stellar.Misc.Macro.MacroSpeed / 100)
+                    game:GetService("VirtualInputManager"):SendMouseWheelEvent("0", "0", true, game)
+                    task.wait(getgenv().Stellar.Misc.Macro.MacroSpeed / 100)
+                    game:GetService("VirtualInputManager"):SendMouseWheelEvent("0", "0", false, game)
+                    task.wait(getgenv().Stellar.Misc.Macro.MacroSpeed / 100)
+                    game:GetService("VirtualInputManager"):SendMouseWheelEvent("0", "0", true, game)
+                    task.wait(getgenv().Stellar.Misc.Macro.MacroSpeed / 100)
+                    game:GetService("VirtualInputManager"):SendMouseWheelEvent("0", "0", false, game)
+                    task.wait(getgenv().Stellar.Misc.Macro.MacroSpeed / 100)
+                until SpeedGlitch == false
+            end
+        end
+    end
+end)
