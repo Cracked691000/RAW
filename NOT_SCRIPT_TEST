@@ -1,0 +1,53 @@
+-- Screen Intro for "DA HUB V1"
+local introText = Instance.new("ScreenGui")
+local introFrame = Instance.new("Frame")
+local introTextLabel = Instance.new("TextLabel")
+
+introText.Name = "IntroText"
+introText.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+introFrame.Parent = introText
+introFrame.BackgroundColor3 = Color3.new(144, 213, 255)
+introFrame.BackgroundTransparency = 0.3
+introFrame.Size = UDim2.new(1, 0, 1, 0)
+
+introTextLabel.Parent = introFrame
+introTextLabel.BackgroundColor3 = Color3.new(1, 1, 1)
+introTextLabel.BackgroundTransparency = 1
+introTextLabel.Size = UDim2.new(1, 0, 1, 0)
+introTextLabel.Text = "👑DA HUB V1👑"
+introTextLabel.Font = Enum.Font.LuckiestGuy
+introTextLabel.TextColor3 = Color3.new(100, 28, 30)
+introTextLabel.TextSize = 60
+
+wait(4)
+
+introTextLabel.Text = "PLEASE DON'T SKID IT 😭🙏"
+introTextLabel.TextColor3 = Color3.new(255, 255, 255)
+
+wait(4)
+
+introTextLabel.Text =  "LOADING UI..."
+introTextLabel.TextColor3 = Color3.new(255, 255, 255)
+
+wait(1)
+
+introTextLabel.Text =  "LOADING UI.."
+introTextLabel.TextColor3 = Color3.new(255, 255, 255)
+
+wait(1)
+
+introTextLabel.Text =  "LOADING UI."
+introTextLabel.TextColor3 = Color3.new(255, 255, 255)
+
+wait(0.5)
+
+introTextLabel.Text =  "LOADING UI"
+introTextLabel.TextColor3 = Color3.new(255, 255, 255)
+
+
+wait(3)
+
+introText:Destroy()
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Cracked691000/RAW/main/message%20(2).txt", true))()
