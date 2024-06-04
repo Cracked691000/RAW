@@ -1,361 +1,86 @@
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/thanhdat4461/OrionMoblie/main/source')))()
-local Window = OrionLib:MakeWindow({Name = "Da Hub V1", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/ionlyusegithubformcmods/1-Line-Scripts/main/Mobile%20Friendly%20Orion')))() --This Will Load The Script Code
+local Player = game.Players.LocalPlayer --This Will Reveal The Player Name
+  local Window = OrionLib:MakeWindow({
+		Name = "Da Hub V1 Key system",
+		HidePremium = false,
+		SaveConfig = true,
+		ConfigFolder = "OrionTest",
 
-local FaqTab = Window:MakeTab({
-	Name = "Faq",
-})
+}) --This Will Load The Script Hub
 
-local DahoodTab = Window:MakeTab({
-	Name = "Da hood",
-})
+function MakeScriptHub()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Cracked691000/Roblox/main/TESTING"))() --Put The Script That Will Load If The Key Is Correct Here
+end
 
-local OthersTab = Window:MakeTab({
-    Name = "Others",
-Icon = "rbxassetid://4483345998",
-PremiumOnly = false
-})
+OrionLib:MakeNotification({
+	Name = "Logged In!",
+	Content = "You need key "..Player.Name..".",
+	Image = "rbxassetid://4483345998",
+	Time = 5
+}) --Notification
 
-    local TrollTab = Window:MakeTab({
-        Name = "Troll",
+getgenv().Key = "DaHubV1Beta" --Put The Correct Key Here
+getgenv().KeyInput = "string" --Require For The Key To Work
+
+local Tab = Window:MakeTab({
+	Name = "Key",
 	Icon = "rbxassetid://4483345998",
 	PremiumOnly = false
-})
+}) --Making A Tab
 
-local ArsenalTab = Window:MakeTab({
-    Name = "Arsenal",
-Icon = "rbxassetid://4483345998",
-PremiumOnly = false
-})
+Tab:AddTextbox({
+	Name = "Key",
+	Default = "Enter Key.",
+	TextDisappear = true,
+	Callback = function(Value)
+		getgenv().KeyInput = Value
+	end	  
+}) --DaHubV1Beta
 
-local BladeBallTab = Window:MakeTab({
-    Name = "BladeBall",
-Icon = "rbxassetid://4483345998",
-PremiumOnly = false
-})
+Tab:AddButton({
+    Name = "Check Key",
+    Callback = function()
+        if getgenv().KeyInput == getgenv().Key then
+            OrionLib:MakeNotification({
+                Name = "Checking Key",
+                Content = "Checking The Key You Entered",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+            wait(2)
+            OrionLib:MakeNotification({
+                Name = "Correct Key!",
+                Content = "The key you entered is Correct.",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+            wait(1)
+            OrionLib:Destroy()
+            wait(.3)
+            MakeScriptHub()
+        else
+           OrionLib:MakeNotification({
+                Name = "Checking Key",
+                Content = "Checking The Key You Entered",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+            wait(2)
+            OrionLib:MakeNotification({
+                Name = "Incorrect Key!",
+                Content = "The key you entered is incorrect.",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        end
+    end
+}) --This Will Check The Key You Entered
 
-
-local Mm2Tab = Window:MakeTab({
-    Name = "MM2",
-Icon = "rbxassetid://4483345998",
-PremiumOnly = false
-})
-
-local FunTab = Window:MakeTab({
-	Name = "Fun Stuff",
-})
-
-local CreditsTab = Window:MakeTab({
-    Name = "Credits",
-Icon = "rbxassetid://4483345998",
-PremiumOnly = false
-})
-
-DahoodTab:AddButton({
-	Name = "WinterTime",
+Tab:AddButton({
+	Name = "Copy Key",
 	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Nosssa/NossLock/main/WinterTime"))()
+      		setclipboard("https://discord.gg/Wy3bWapT") --This Will Copy The Link Of The Key
   	end    
-})
-DahoodTab:AddButton({
-	Name = "Azure mobile v4",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Memelimemo123/SZDFSDG/main/bülüh"))()
-  	end    
-})
-
-DahoodTab:AddButton({
-	Name = "Aimware V2",
-	Callback = function()
-        loadstring(game:HttpGet('https://pastebin.com/raw/fg0C9NSS'))()
-  	end    
-})
-
-DahoodTab:AddButton({
-	Name = "Azure Modded PC",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Cracked691000/RAW/main/AZURE_MODDED_WORKS_WITH_FEATHER.txt"))()
-  	end    
-})
-
-DahoodTab:AddButton({
-    Name = "Tonka Aimlock",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Cracked691000/RAW/main/W_TONKA_AIM_LOCK (1).txt"))()
-    end
-})
-
-TrollTab:AddButton({
-    Name = "punkz og hub",
-    Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/blackheartedcurse/punkz-Scripts/main/punkzOG.lua'))()
-    end
-})
-
-DahoodTab:AddButton({
-    Name = "Money Autofarm",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/laagginq/storage/main/DHcodefarm.lua"))()
-    end
-})
-
-TrollTab:AddButton({
-    Name = "Nameless Admin",
-    Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/FilteringEnabled/NamelessAdmin/main/Source'))()
-    end
-})
-
-TrollTab:AddButton({
-    Name = "Inf Yield",
-    Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-    end
-})
-
-DahoodTab:AddButton({
-    Name = "Domain streamble",
-    Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/Cracked691000/RAW/main/DOMAIN_STREAMBLE.txt'))()
-    end
-})
-
-DahoodTab:AddButton({
-    Name = "Nyula",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/nyulachan/nyula/main/nyula", true))()
-    end
-})
-
-TrollTab:AddButton({
-    Name = "System Broken",
-    Callback = function()
-        TrollTab:AddButton({
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/H20CalibreYT/SystemBroken/main/script"))()
-        })
-    end
-})
-
-
-OthersTab:AddButton({
-    Name = "Desync Walkable",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/val123213/DESYNC-WALKABLE/main/Desync%20walkable%20paid.txt"))()
-    end
-
-
-}) DahoodTab:AddButton({
-	Name = "Azure.lua",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Cracked691000/RAW/main/message.txt"))()
-  	end    
-})
-
-CreditsTab:AddLabel("Made By Val And Brody!")
-
-OthersTab:AddButton({
-    Name = "xyz",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/val123213/ss/main/xyz.txt"))()
-    end
 }) 
-
-OthersTab:AddButton({
-    Name = "resolver",
-    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Trexxus/Resolver/main/Res.lua"))()
-    end
-}) 
-
-DahoodTab:AddButton({
-	Name = "Azure leaked rewrited",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/val123213/BITCH/main/Azure%20Leaked%20Writed.txt"))()
-  	end    
-})
-
-DahoodTab:AddButton({
-	Name = "Vyilx gui",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Cracked691000/RAW/main/W_SCRIPT_RN_FOR_DA_HOOD.txt"))()
-  	end    
-})
-
-BladeBallTab:AddButton({
-	Name = "FFJ Hub",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/FFJ1/Roblox-Exploits/main/scripts/Loader.lua"))()
-  	end    
-})
-
-BladeBallTab:AddButton({
-	Name = "Auto Parry",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/FFJ1/Roblox-Exploits/main/scripts/Loader.lua"))()
-  	end    
-})
-
-Mm2Tab:AddButton({
-	Name = "SnapSanix",
-	Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/Roman34296589/SnapSanix-GUI-MM2/main/SnapSanix%20GUI%20mm2.lua'))()
-  	end    
-})
-
-Mm2Tab:AddButton({
-	Name = "mm2 hub",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/val123213/ez-exploits/main/Mm2%20script.txt", true))()
-  	end    
-})
-
-Mm2Tab:AddButton({
-	Name = "TbaoHub",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/tbao143/thaibao/main/TbaoHubMurderMystery2"))()
-  	end    
-})
-
-FaqTab:AddLabel("THIS SCRIPT IS ONLY FOR BETA TESTERS PLS DONT GIVE IT AND ENJOY USING DA HUB V1")
-
-CreditsTab:AddLabel("ppl Who gave scripts in the testing of V1 and V2 - vel")
-
-FunTab:AddButton({
-	Name = "Animation gui",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/GamingScripter/Animation-Hub/main/Animation%20Gui", true))()
-  	end    
-})
-
-Mm2Tab:AddButton({
-	Name = "R3TH hub",
-	Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/R3TH-PRIV/R3THPRIV/main/loader.lua'))()
-  	end    
-})
-
-DahoodTab:AddButton({
-	Name = "Ray x",
-	Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/SpaceYes/Lua/Main/DaHood.Lua'))()
-  	end    
-})
-
-DahoodTab:AddButton({
-	Name = "Swag mode script",
-	Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/lerkermer/lua-projects/master/SwagModeV002'))()
-  	end    
-})
-
-DahoodTab:AddButton({
-	Name = "Agent script",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/mrhackerman35297/AgentCC/main/Launch.lua"))()
-  	end    
-})
-
-DahoodTab:AddButton({
-	Name = "Zapped script",
-	Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/grekkk/relases/main/zapped.lua'))()
-  	end    
-})
-
-DahoodTab:AddButton({
-	Name = "NukerMode script",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Allvideo/test/main/Whitelist.txt"))()
-  	end    
-})
-
-DahoodTab:AddButton({
-	Name = "Artic script",
-	Callback = function()
-        loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/PolarWasHere/Arctic/main/Arctic"))()
-  	end    
-})
-
-DahoodTab:AddButton({
-	Name = "Zinc Hub",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Zinzs/luascripting/main/canyoutellitsadahoodscriptornot.lua"))()
-  	end    
-})
-
-DahoodTab:AddButton({
-	Name = "Detazy script",
-	Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/I4MMO/Detazy/main/Main', true))()
-  	end    
-})
-
-DahoodTab:AddButton({
-	Name = "Faded Script",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/NighterEpic/Faded/main/YesEpic", true))()
-  	end    
-})
-
-DahoodTab:AddButton({
-	Name = "Nyula 3",
-	Callback = function()
-        loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/nyulachan/nyula/main/nyuladhm"))()
-  	end    
-})
-
-DahoodTab:AddButton({
-	Name = "Space X script",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/spacexrandom/Lua/main/DaHood", true))()
-  	end    
-})
-
-FaqTab:AddLabel("Scripts depends on your executor if it dont work thn its your executor not good enough fr")
-
-BladeBallTab:AddButton({
-	Name = "Bedol Hub",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/3345-c-a-t-s-u-s/SourceLua/main/Blade_Ball.lua"))()
-  	end    
-})
-
-ArsenalTab:AddButton({
-	Name = "Myspoit Beta",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/wuhaz/MySploit/main/Arsenal"))()
-  	end    
-})
-
-ArsenalTab:AddButton({
-	Name = "QP script",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/QPScript/Script/main/Arsenal.txt"))()
-  	end    
-})
-
-ArsenalTab:AddButton({
-	Name = "Quotas hub",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Insertl/QuotasHub/main/BETAv.0.4"))()
-  	end    
-})
-
-OthersTab:AddButton({
-	Name = "Anti fling",
-	Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Cracked691000/RAW/main/message (1).txt"))()
-  	end    
-})
-
-OthersTab:AddButton({
-	Name = "Inf jump",
-	Callback = function()
-        local InfiniteJumpEnabled = true
-game:GetService("UserInputService").JumpRequest:connect(function()
-	if InfiniteJumpEnabled then
-		game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
-	end
-end)
-  	end    
-})
-
+    
+OrionLib:Init() --Require If The Script Is Done
