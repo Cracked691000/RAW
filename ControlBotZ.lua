@@ -35,7 +35,7 @@ if LocalPLR.Name ~= Username then
     local logChat = getgenv().logChat
     webhook = getgenv().webhook
 
-    Prefix = getgenv().Prefix
+    ! = getgenv().Prefix
 
     local bots = getgenv().Bots
 
