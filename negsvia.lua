@@ -214,6 +214,7 @@ MinimizeButton.TextSize = 25.000
 
 -- DICTIONARY LOADED FROM GITHUB (replaces embedded ~800 words)
 local ENGLISH_WORDS = {}
+local WORDS_LOADED = false
 
 -- Function to fetch words from GitHub
 local function IDA_fetchWords()
@@ -249,15 +250,12 @@ local function IDA_fetchWords()
     end
 end
 
--- Load words from GitHub
-coroutine.wrap(function()
-    ENGLISH_WORDS = IDA_fetchWords()
-    pcall(function()
-        Text3.Text = "Loaded " .. #ENGLISH_WORDS .. " words!"
-        wait(1)
-        Text3.Text = "Ready!"
-    end)
-end)()
+-- Load words from GitHub (SYNCHRONOUSLY)
+ENGLISH_WORDS = IDA_fetchWords()
+WORDS_LOADED = true
+Text3.Text = "Loaded " .. #ENGLISH_WORDS .. " words!"
+wait(1)
+Text3.Text = "Ready!"
 
 -- Utility helpers & IDA-named functions
 local function IDA_tableItemExists(array, val)
