@@ -1,0 +1,720 @@
+--[[
+    Plates of Fate — 5x5 Minesweeper Solver GUI
+    ---------------------------------------------
+    HOW TO USE THIS SCRIPT:
+    Put this as a LocalScript inside StarterGui (e.g. StarterGui > MinesweeperSolver).
+    It builds its own ScreenGui at runtime, so you don't need to build any UI by hand.
+
+    HOW THE TOOL WORKS (matches you second-hand against the real board):
+    - You look at the real game board and tap the matching cell in this GUI to
+      cycle it: unrevealed -> 0 -> 1 -> ... -> 8 -> unrevealed.
+    - Every time a cell changes, the solver re-runs and recolors the board:
+        GREEN  = proven safe (0% risk)
+        YELLOW = lowest-risk unrevealed cell(s) right now
+        ORANGE = highest-risk unrevealed cell(s) right now (avoid)
+    - A risk % is shown on yellow/orange cells.
+    - A cash-out tip appears based on the current best (lowest-risk) option.
+    - Reset clears the board for a new round.
+
+    This only does math on numbers YOU type in. It does not read or interact
+    with the actual game in any way.
+--]]
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- ============================================================
+-- CONFIG
+-- ============================================================
+local ROWS = 5
+local COLS = 5
+local CANDIDATE_MINE_COUNTS = {5, 6, 7}
+local COMBO_LIMIT = 600000 -- performance guard from spec section 6
+
+-- ============================================================
+-- STATE
+-- board[r][c] = nil (unrevealed) or 0-8 (revealed)
+-- ============================================================
+local board = {}
+for r = 1, ROWS do
+    board[r] = {}
+    for c = 1, COLS do
+        board[r][c] = nil
+    end
+end
+
+-- ============================================================
+-- CORE SOLVER LOGIC (sections 2, 4-7 of the spec)
+-- ============================================================
+
+-- Section 2: orthogonal-only neighbors, clipped to bounds
+local function neighbors(r, c)
+    local result = {}
+    local deltas = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
+    for _, d in ipairs(deltas) do
+        local nr, nc = r + d[1], c + d[2]
+        if nr >= 1 and nr <= ROWS and nc >= 1 and nc <= COLS then
+            table.insert(result, {nr, nc})
+        end
+    end
+    return result
+end
+
+local function cellKey(r, c)
+    return r .. "," .. c
+end
+
+-- Section 4: build one constraint per revealed number cell
+-- constraint = { cells = {ckey,...}, need = val }
+local function buildConstraints()
+    local constraints = {}
+    for r = 1, ROWS do
+        for c = 1, COLS do
+            local val = board[r][c]
+            if val ~= nil then
+                local unrevealedNeighbors = {}
+                for _, n in ipairs(neighbors(r, c)) do
+                    local nr, nc = n[1], n[2]
+                    if board[nr][nc] == nil then
+                        table.insert(unrevealedNeighbors, cellKey(nr, nc))
+                    end
+                end
+                if #unrevealedNeighbors > 0 then
+                    table.insert(constraints, {cells = unrevealedNeighbors, need = val})
+                end
+                -- val == 0 with no unrevealed neighbors -> nothing to learn, skipped
+            end
+        end
+    end
+    return constraints
+end
+
+local function listAllUnrevealed()
+    local cells = {}
+    for r = 1, ROWS do
+        for c = 1, COLS do
+            if board[r][c] == nil then
+                table.insert(cells, cellKey(r, c))
+            end
+        end
+    end
+    return cells
+end
+
+local function setContains(set, key)
+    return set[key] == true
+end
+
+local function countKnownMinesIn(cellList, knownMines)
+    local n = 0
+    for _, k in ipairs(cellList) do
+        if setContains(knownMines, k) then
+            n = n + 1
+        end
+    end
+    return n
+end
+
+local function remainingCells(cellList, knownMines, knownSafe)
+    local rem = {}
+    for _, k in ipairs(cellList) do
+        if not setContains(knownMines, k) and not setContains(knownSafe, k) then
+            table.insert(rem, k)
+        end
+    end
+    return rem
+end
+
+-- Section 5: deterministic logic pass. Returns knownSafe, knownMine sets (key -> true)
+local function deterministicPass(constraints)
+    local knownMine = {}
+    local knownSafe = {}
+    local changed = true
+
+    while changed do
+        changed = false
+
+        -- A. Trivial single-constraint rule
+        for _, con in ipairs(constraints) do
+            local rem = remainingCells(con.cells, knownMine, knownSafe)
+            local known = countKnownMinesIn(con.cells, knownMine)
+            local needed = con.need - known
+
+            -- sanity clamp
+            if needed < 0 or needed > #rem then
+                -- contradictory/bad reading, discard this deduction
+            else
+                if needed == 0 and #rem > 0 then
+                    for _, k in ipairs(rem) do
+                        if not setContains(knownSafe, k) then
+                            knownSafe[k] = true
+                            changed = true
+                        end
+                    end
+                elseif needed == #rem and needed > 0 then
+                    for _, k in ipairs(rem) do
+                        if not setContains(knownMine, k) then
+                            knownMine[k] = true
+                            changed = true
+                        end
+                    end
+                end
+            end
+        end
+
+        -- B. Subset elimination (e.g. "1-2-1" patterns)
+        for i, A in ipairs(constraints) do
+            for j, B in ipairs(constraints) do
+                if i ~= j then
+                    -- is A.cells a proper subset of B.cells?
+                    local aSet = {}
+                    for _, k in ipairs(A.cells) do aSet[k] = true end
+                    local isSubset = true
+                    local sameSize = (#A.cells == #B.cells)
+                    for _, k in ipairs(B.cells) do
+                        -- nothing needed here, just checking membership below
+                    end
+                    local allAInB = true
+                    for _, k in ipairs(A.cells) do
+                        local found = false
+                        for _, k2 in ipairs(B.cells) do
+                            if k == k2 then found = true break end
+                        end
+                        if not found then allAInB = false break end
+                    end
+                    if allAInB and not sameSize and #A.cells < #B.cells then
+                        -- leftover = B.cells - A.cells
+                        local leftover = {}
+                        for _, k in ipairs(B.cells) do
+                            if not aSet[k] then
+                                table.insert(leftover, k)
+                            end
+                        end
+                        local aKnown = countKnownMinesIn(A.cells, knownMine)
+                        local bKnown = countKnownMinesIn(B.cells, knownMine)
+                        local leftoverNeeded = (B.need - bKnown) - (A.need - aKnown)
+                        local leftoverRem = remainingCells(leftover, knownMine, knownSafe)
+
+                        if leftoverNeeded < 0 or leftoverNeeded > #leftoverRem then
+                            -- discard, contradictory
+                        else
+                            if leftoverNeeded == 0 and #leftoverRem > 0 then
+                                for _, k in ipairs(leftoverRem) do
+                                    if not setContains(knownSafe, k) then
+                                        knownSafe[k] = true
+                                        changed = true
+                                    end
+                                end
+                            elseif leftoverNeeded == #leftoverRem and leftoverNeeded > 0 then
+                                for _, k in ipairs(leftoverRem) do
+                                    if not setContains(knownMine, k) then
+                                        knownMine[k] = true
+                                        changed = true
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    return knownSafe, knownMine
+end
+
+local function nCr(n, k)
+    if k < 0 or k > n then return 0 end
+    if k == 0 or k == n then return 1 end
+    k = math.min(k, n - k)
+    local result = 1
+    for i = 1, k do
+        result = result * (n - k + i) / i
+    end
+    return result
+end
+
+-- checks whether a proposed mine-set (a table of key->true, covering exactly
+-- the cells we are solving for) is consistent with every constraint
+local function isConsistent(constraints, mineAssign, knownMine)
+    for _, con in ipairs(constraints) do
+        local count = 0
+        for _, k in ipairs(con.cells) do
+            if setContains(knownMine, k) or setContains(mineAssign, k) then
+                count = count + 1
+            end
+        end
+        if count ~= con.need then
+            return false
+        end
+    end
+    return true
+end
+
+-- Section 6: brute force for a single candidate total T, via backtracking
+-- (functionally equivalent to enumerating all combinations, but prunes early)
+-- Returns: perCellMineCount (key -> count), totalValidCombos
+local function bruteForceForT(T, cellsToAssign, constraints, knownMine, knownMineCountSoFar)
+    local need = T - knownMineCountSoFar
+    if need < 0 or need > #cellsToAssign then
+        return nil, 0 -- impossible for this T
+    end
+
+    local perCellCount = {}
+    for _, k in ipairs(cellsToAssign) do perCellCount[k] = 0 end
+    local total = 0
+
+    local assign = {}
+    local n = #cellsToAssign
+
+    local function recurse(index, minesPlaced)
+        -- prune: not enough cells left to reach `need`
+        local remainingSlots = n - index + 1
+        if minesPlaced + remainingSlots < need then return end
+        if minesPlaced > need then return end
+
+        if index > n then
+            if minesPlaced == need and isConsistent(constraints, assign, knownMine) then
+                total = total + 1
+                for k, v in pairs(assign) do
+                    if v then
+                        perCellCount[k] = perCellCount[k] + 1
+                    end
+                end
+            end
+            return
+        end
+
+        local key = cellsToAssign[index]
+
+        -- try safe
+        assign[key] = false
+        recurse(index + 1, minesPlaced)
+
+        -- try mine
+        assign[key] = true
+        recurse(index + 1, minesPlaced + 1)
+
+        assign[key] = nil
+    end
+
+    recurse(1, 0)
+
+    if total == 0 then
+        return nil, 0
+    end
+    return perCellCount, total
+end
+
+-- Section 7: fallback heuristic (local density estimate)
+local function fallbackHeuristic(constraints, unrevealedCells, knownMine, knownSafe, avgCandidateCount)
+    local risk = {}
+    local touchCount = {}
+    local touchSum = {}
+
+    for _, k in ipairs(unrevealedCells) do
+        touchCount[k] = 0
+        touchSum[k] = 0
+    end
+
+    for _, con in ipairs(constraints) do
+        local rem = remainingCells(con.cells, knownMine, knownSafe)
+        if #rem > 0 then
+            local known = countKnownMinesIn(con.cells, knownMine)
+            local needed = con.need - known
+            if needed < 0 then needed = 0 end
+            local localRisk = needed / #rem
+            for _, k in ipairs(rem) do
+                touchSum[k] = touchSum[k] + localRisk
+                touchCount[k] = touchCount[k] + 1
+            end
+        end
+    end
+
+    local baseline = avgCandidateCount / math.max(#unrevealedCells, 1)
+
+    for _, k in ipairs(unrevealedCells) do
+        if touchCount[k] > 0 then
+            risk[k] = touchSum[k] / touchCount[k]
+        else
+            risk[k] = baseline
+        end
+    end
+
+    return risk
+end
+
+-- Orchestrates sections 4-8: returns
+--   status: "safe_found" | "risk_computed"
+--   safeCells: list of keys (only if status == "safe_found")
+--   riskByCell: key -> 0..1 (only if status == "risk_computed")
+local function solve()
+    local constraints = buildConstraints()
+    local knownSafe, knownMine = deterministicPass(constraints)
+
+    -- collect any deterministically-safe unrevealed cells
+    local safeCells = {}
+    for k, v in pairs(knownSafe) do
+        if v then table.insert(safeCells, k) end
+    end
+
+    if #safeCells > 0 then
+        return "safe_found", safeCells, nil
+    end
+
+    -- Probability step (section 6): only unrevealed cells not already known mines
+    local allUnrevealed = listAllUnrevealed()
+    local cellsToAssign = {}
+    for _, k in ipairs(allUnrevealed) do
+        if not setContains(knownMine, k) then
+            table.insert(cellsToAssign, k)
+        end
+    end
+
+    local knownMineCount = 0
+    for _ in pairs(knownMine) do knownMineCount = knownMineCount + 1 end
+
+    -- performance guard: estimate total combinations across all candidate T's
+    local n = #cellsToAssign
+    local estimatedTotal = 0
+    for _, T in ipairs(CANDIDATE_MINE_COUNTS) do
+        local need = T - knownMineCount
+        estimatedTotal = estimatedTotal + nCr(n, need)
+    end
+
+    local riskByCell = {}
+    local sumRisk = {}
+    local validTCount = 0
+    for _, k in ipairs(cellsToAssign) do sumRisk[k] = 0 end
+
+    if estimatedTotal <= COMBO_LIMIT and n > 0 then
+        for _, T in ipairs(CANDIDATE_MINE_COUNTS) do
+            local perCellCount, total = bruteForceForT(T, cellsToAssign, constraints, knownMine, knownMineCount)
+            if perCellCount and total > 0 then
+                validTCount = validTCount + 1
+                for _, k in ipairs(cellsToAssign) do
+                    sumRisk[k] = sumRisk[k] + (perCellCount[k] / total)
+                end
+            end
+        end
+    end
+
+    if validTCount > 0 then
+        for _, k in ipairs(cellsToAssign) do
+            riskByCell[k] = sumRisk[k] / validTCount
+        end
+    else
+        -- fallback heuristic (brute force too expensive or no valid combos found)
+        local avgCandidate = 0
+        for _, T in ipairs(CANDIDATE_MINE_COUNTS) do avgCandidate = avgCandidate + T end
+        avgCandidate = avgCandidate / #CANDIDATE_MINE_COUNTS
+        riskByCell = fallbackHeuristic(constraints, cellsToAssign, knownMine, knownSafe, avgCandidate)
+    end
+
+    -- known mines are 100% risk, for display purposes if needed
+    for k in pairs(knownMine) do
+        riskByCell[k] = 1
+    end
+
+    return "risk_computed", nil, riskByCell
+end
+
+-- ============================================================
+-- GUI CONSTRUCTION
+-- ============================================================
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MinesweeperSolverGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 300, 0, 430)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -215)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 34)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = mainFrame
+
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 5)
+title.BackgroundTransparency = 1
+title.Text = "Minesweeper Solver"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = mainFrame
+
+local gridFrame = Instance.new("Frame")
+gridFrame.Name = "GridFrame"
+gridFrame.Size = UDim2.new(0, 250, 0, 250)
+gridFrame.Position = UDim2.new(0.5, -125, 0, 40)
+gridFrame.BackgroundTransparency = 1
+gridFrame.Parent = mainFrame
+
+local gridLayout = Instance.new("UIGridLayout")
+gridLayout.CellSize = UDim2.new(0, 46, 0, 46)
+gridLayout.CellPadding = UDim2.new(0, 4, 0, 4)
+gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
+gridLayout.Parent = gridFrame
+
+local summaryLabel = Instance.new("TextLabel")
+summaryLabel.Name = "Summary"
+summaryLabel.Size = UDim2.new(1, -20, 0, 20)
+summaryLabel.Position = UDim2.new(0, 10, 0, 298)
+summaryLabel.BackgroundTransparency = 1
+summaryLabel.Text = "Revealed: 0 / Unrevealed: 25"
+summaryLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+summaryLabel.Font = Enum.Font.Gotham
+summaryLabel.TextSize = 13
+summaryLabel.Parent = mainFrame
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Name = "Status"
+statusLabel.Size = UDim2.new(1, -20, 0, 40)
+statusLabel.Position = UDim2.new(0, 10, 0, 320)
+statusLabel.BackgroundTransparency = 1
+statusLabel.TextWrapped = true
+statusLabel.Text = "Tap cells to match the real board."
+statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.TextSize = 13
+statusLabel.Parent = mainFrame
+
+local cashoutLabel = Instance.new("TextLabel")
+cashoutLabel.Name = "CashoutTip"
+cashoutLabel.Size = UDim2.new(1, -20, 0, 30)
+cashoutLabel.Position = UDim2.new(0, 10, 0, 362)
+cashoutLabel.BackgroundTransparency = 1
+cashoutLabel.TextWrapped = true
+cashoutLabel.Text = ""
+cashoutLabel.Font = Enum.Font.GothamBold
+cashoutLabel.TextSize = 13
+cashoutLabel.Parent = mainFrame
+
+local resetButton = Instance.new("TextButton")
+resetButton.Name = "ResetButton"
+resetButton.Size = UDim2.new(0, 100, 0, 30)
+resetButton.Position = UDim2.new(0.5, -50, 0, 395)
+resetButton.BackgroundColor3 = Color3.fromRGB(70, 70, 78)
+resetButton.Text = "Reset"
+resetButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+resetButton.Font = Enum.Font.GothamBold
+resetButton.TextSize = 14
+resetButton.Parent = mainFrame
+
+local resetCorner = Instance.new("UICorner")
+resetCorner.CornerRadius = UDim.new(0, 6)
+resetCorner.Parent = resetButton
+
+-- Colors
+local COLOR_UNREVEALED = Color3.fromRGB(60, 60, 66)
+local COLOR_REVEALED = Color3.fromRGB(90, 90, 98)
+local COLOR_GREEN = Color3.fromRGB(60, 180, 90)
+local COLOR_YELLOW = Color3.fromRGB(220, 190, 50)
+local COLOR_ORANGE = Color3.fromRGB(220, 120, 40)
+
+-- Build the 25 cell buttons
+local cellButtons = {} -- cellButtons[r][c] = TextButton
+for r = 1, ROWS do
+    cellButtons[r] = {}
+    for c = 1, COLS do
+        local btn = Instance.new("TextButton")
+        btn.Name = "Cell_" .. r .. "_" .. c
+        btn.LayoutOrder = (r - 1) * COLS + c
+        btn.BackgroundColor3 = COLOR_UNREVEALED
+        btn.Text = ""
+        btn.Font = Enum.Font.GothamBold
+        btn.TextSize = 16
+        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        btn.Parent = gridFrame
+
+        local btnCorner = Instance.new("UICorner")
+        btnCorner.CornerRadius = UDim.new(0, 6)
+        btnCorner.Parent = btn
+
+        local dot = Instance.new("Frame")
+        dot.Name = "ZeroDot"
+        dot.Size = UDim2.new(0, 6, 0, 6)
+        dot.Position = UDim2.new(0.5, -3, 0.5, -3)
+        dot.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        dot.Visible = false
+        local dotCorner = Instance.new("UICorner")
+        dotCorner.CornerRadius = UDim.new(1, 0)
+        dotCorner.Parent = dot
+        dot.Parent = btn
+
+        cellButtons[r][c] = btn
+    end
+end
+
+-- ============================================================
+-- UI <-> STATE SYNC
+-- ============================================================
+
+local function refreshUI()
+    local revealedCount = 0
+    local unrevealedCount = 0
+    for r = 1, ROWS do
+        for c = 1, COLS do
+            if board[r][c] == nil then
+                unrevealedCount = unrevealedCount + 1
+            else
+                revealedCount = revealedCount + 1
+            end
+        end
+    end
+    summaryLabel.Text = string.format("Revealed: %d / Unrevealed: %d", revealedCount, unrevealedCount)
+
+    -- base pass: draw raw board state first
+    for r = 1, ROWS do
+        for c = 1, COLS do
+            local btn = cellButtons[r][c]
+            local val = board[r][c]
+            local dot = btn:FindFirstChild("ZeroDot")
+            if val == nil then
+                btn.BackgroundColor3 = COLOR_UNREVEALED
+                btn.Text = ""
+                if dot then dot.Visible = false end
+            else
+                btn.BackgroundColor3 = COLOR_REVEALED
+                btn.Text = tostring(val)
+                if dot then dot.Visible = (val == 0) end
+            end
+        end
+    end
+
+    -- only solve if there's at least one revealed cell (otherwise nothing to deduce)
+    local anyRevealed = false
+    for r = 1, ROWS do
+        for c = 1, COLS do
+            if board[r][c] ~= nil then anyRevealed = true break end
+        end
+        if anyRevealed then break end
+    end
+
+    if not anyRevealed then
+        statusLabel.Text = "Tap cells to match the real board, then keep tapping as the game reveals numbers."
+        cashoutLabel.Text = ""
+        return
+    end
+
+    local status, safeCells, riskByCell = solve()
+
+    if status == "safe_found" then
+        local safeSet = {}
+        for _, k in ipairs(safeCells) do safeSet[k] = true end
+        for r = 1, ROWS do
+            for c = 1, COLS do
+                if board[r][c] == nil and safeSet[cellKey(r, c)] then
+                    cellButtons[r][c].BackgroundColor3 = COLOR_GREEN
+                end
+            end
+        end
+        statusLabel.Text = string.format("%d cell(s) proven 100%% safe — highlighted green.", #safeCells)
+        cashoutLabel.Text = ""
+        cashoutLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        return
+    end
+
+    -- status == "risk_computed"
+    -- find min and max risk among unrevealed cells
+    local minRisk, maxRisk = math.huge, -math.huge
+    local hasAny = false
+    for r = 1, ROWS do
+        for c = 1, COLS do
+            if board[r][c] == nil then
+                local k = cellKey(r, c)
+                local risk = riskByCell[k] or 0
+                if risk < minRisk then minRisk = risk end
+                if risk > maxRisk then maxRisk = risk end
+                hasAny = true
+            end
+        end
+    end
+
+    if not hasAny then
+        statusLabel.Text = "No unrevealed cells left."
+        cashoutLabel.Text = ""
+        return
+    end
+
+    for r = 1, ROWS do
+        for c = 1, COLS do
+            if board[r][c] == nil then
+                local k = cellKey(r, c)
+                local risk = riskByCell[k] or 0
+                local btn = cellButtons[r][c]
+                if risk <= 0.0001 then
+                    btn.BackgroundColor3 = COLOR_GREEN
+                elseif risk >= maxRisk - 0.0001 then
+                    btn.BackgroundColor3 = COLOR_ORANGE
+                    btn.Text = string.format("%d%%", math.floor(risk * 100 + 0.5))
+                elseif risk <= minRisk + 0.0001 then
+                    btn.BackgroundColor3 = COLOR_YELLOW
+                    btn.Text = string.format("%d%%", math.floor(risk * 100 + 0.5))
+                else
+                    btn.BackgroundColor3 = COLOR_UNREVEALED
+                end
+            end
+        end
+    end
+
+    statusLabel.Text = string.format(
+        "No certain-safe cell. Best (lowest-risk) option ~%d%% risk.",
+        math.floor(minRisk * 100 + 0.5)
+    )
+
+    -- Section 9: cash-out tip, independent of highlight colors
+    if minRisk >= 0.35 then
+        cashoutLabel.Text = "⚠ Risk is high — strongly consider cashing out."
+        cashoutLabel.TextColor3 = Color3.fromRGB(230, 70, 70)
+    elseif minRisk >= 0.15 then
+        cashoutLabel.Text = "Risk is moderate — worth weighing cashing out."
+        cashoutLabel.TextColor3 = Color3.fromRGB(220, 190, 50)
+    else
+        cashoutLabel.Text = ""
+    end
+end
+
+-- Section 10: tapping a cell cycles unrevealed -> 0 -> 1 -> ... -> 8 -> unrevealed
+local function onCellClicked(r, c)
+    local val = board[r][c]
+    if val == nil then
+        board[r][c] = 0
+    elseif val == 8 then
+        board[r][c] = nil
+    else
+        board[r][c] = val + 1
+    end
+    refreshUI()
+end
+
+for r = 1, ROWS do
+    for c = 1, COLS do
+        cellButtons[r][c].MouseButton1Click:Connect(function()
+            onCellClicked(r, c)
+        end)
+    end
+end
+
+resetButton.MouseButton1Click:Connect(function()
+    for r = 1, ROWS do
+        for c = 1, COLS do
+            board[r][c] = nil
+        end
+    end
+    refreshUI()
+end)
+
+-- initial draw
+refreshUI()
